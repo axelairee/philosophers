@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/11 16:06:23 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/11 16:13:45 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ int	main(int argc, char **argv)
 			if (init.stop)
 			{
 				while (j < init.nb_philo)
-					pthread_join(philo[j].thread);
+					pthread_join(philo[j].thread, NULL);
 				free(philo);
 				free(init.forks);
 				pthread_mutex_destroy(&init.print_lock);
