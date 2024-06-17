@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 12:42:38 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 15:07:00 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,11 @@ int	main(int argc, char **argv)
 	init_philo_struct(&philo, &init);
 	while (1)
 	{
+		if (argc == 6)
+		{
+			if (philo->meals_eaten == init.nb_philo_must_eat)
+				return(0);
+		}
 		if (is_dead(&init, philo) == -1)
 			return (0);
 		usleep(1000);

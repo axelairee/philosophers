@@ -6,33 +6,65 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 13:23:06 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 14:45:56 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	philo_takefork(t_init *init, t_philo *philo)
+void	check_left_fork(t_init *init, t_philo *philo)
+{
+	while (1)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		if (!philo->l_fork)
+		{
+			philo->l_fork = true;
+			print_status(init, philo, philo->id, "has taken a fork");
+			pthread_mutex_unlock(philo->left_fork);
+			break;
+		}
+		pthread_mutex_unlock(philo->left_fork);
+		usleep(10);
+	}
+	return;
+}
+
+void	check_right_fork(t_init *init, t_philo *philo)
+{
+	while (1)
+	{
+		pthread_mutex_lock(philo->right_fork);
+		if (!philo->r_fork && philo->l_fork)
+		{
+			philo->r_fork = true;
+			print_status(init, philo, philo->id, "has taken a fork");
+			pthread_mutex_unlock(philo->right_fork);
+			break;
+		}
+		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_lock(philo->left_fork);
+		philo->l_fork = false;
+		pthread_mutex_unlock(philo->left_fork);
+		usleep(10);
+    }
+	return;
+}
+
+void philo_takefork(t_init *init, t_philo *philo)
 {
 	if (philo->id % 2 == 0)
 	{
-		pthread_mutex_lock(philo->left_fork);
-		philo->l_fork = true;
-		print_status(init, philo, philo->id, "has taken a fork");
-		pthread_mutex_lock(philo->right_fork);
-		philo->r_fork = true;
-		print_status(init, philo, philo->id, "has taken a fork");
+		check_left_fork(init, philo);
+		check_right_fork(init, philo);
 	}
-	else 
+	else
 	{
-		pthread_mutex_lock(philo->right_fork);
-		philo->r_fork = true;
-		print_status(init, philo, philo->id, "has taken a fork");
-		pthread_mutex_lock(philo->left_fork);
-		philo->l_fork = true;
-		print_status(init, philo, philo->id, "has taken a fork");
+		check_left_fork(init, philo);
+		check_right_fork(init, philo);
 	}
 }
+
 
 void	philo_eating(t_init *init, t_philo *philo)
 {

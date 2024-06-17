@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:04:15 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 13:02:45 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 13:37:28 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <limits.h>
 
 typedef struct s_init {
 	int				nb_philo;
@@ -52,5 +53,6 @@ int		init_struct(t_init *init, char **argv, int argc);
 void	init_philo_struct(t_philo **philo, t_init *init);
 void	print_status(t_init *init, t_philo *philo, int id, const char *status);
 long	current_timestamp();
+int		ft_atoi(const char *nptr);
 
 #endif

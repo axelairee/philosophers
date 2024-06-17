@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 13:03:22 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 13:37:51 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@ int	init_struct(t_init *init, char **argv, int argc)
 	int	i;
 
 	i = 0;
-	init->nb_philo = atoi(argv[1]);
+	init->nb_philo = ft_atoi(argv[1]);
 	init->forks = malloc(init->nb_philo * sizeof(pthread_mutex_t));
 	if (!init->forks)
 		return (-1);
-	init->time_to_die = atoi(argv[2]);
-	init->time_to_eat = atoi(argv[3]);
-	init->time_to_sleep = atoi(argv[4]);
+	init->time_to_die = ft_atoi(argv[2]);
+	init->time_to_eat = ft_atoi(argv[3]);
+	init->time_to_sleep = ft_atoi(argv[4]);
 	if (argc == 6)
-		init->nb_philo_must_eat = atoi(argv[5]);
+		init->nb_philo_must_eat = ft_atoi(argv[5]);
 	init->stop = 0;
 	init->start_simu = false;
 	pthread_mutex_init(&init->print_lock, NULL);
