@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 15:07:00 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 16:41:21 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,12 @@ long	current_timestamp()
 
 void	print_status(t_init *init, t_philo *philo, int id, const char *status)
 {
+	pthread_mutex_lock(&init->simulation_lock);
 	pthread_mutex_lock(&init->print_lock);
 	if (!init->stop)
 		printf("%ld %d %s\n",current_timestamp() - philo->start_time, id, status);
 	pthread_mutex_unlock(&init->print_lock);
+	pthread_mutex_lock(&init->simulation_lock);
 }
 
 int	is_dead(t_init *init, t_philo *philo)
@@ -36,13 +38,13 @@ int	is_dead(t_init *init, t_philo *philo)
 	i = 0;
 	while (i < init->nb_philo)
 	{
-		pthread_mutex_lock(&init->simulation_lock);
+		// pthread_mutex_lock(&init->simulation_lock);
 		if (current_timestamp() - philo[i].last_meal_time > init->time_to_die)
 		{
 			print_status(init, philo, philo[i].id, "died");
 			init->stop = 1;
 		}
-		pthread_mutex_unlock(&init->simulation_lock);
+		// pthread_mutex_unlock(&init->simulation_lock);
 		if (init->stop == 1)
 		{
 			while (j < init->nb_philo)
@@ -77,8 +79,10 @@ int	main(int argc, char **argv)
 	{
 		if (argc == 6)
 		{
+			pthread_mutex_lock(&init.if_meals_eaten);
 			if (philo->meals_eaten == init.nb_philo_must_eat)
 				return(0);
+			pthread_mutex_unlock(&init.if_meals_eaten);
 		}
 		if (is_dead(&init, philo) == -1)
 			return (0);

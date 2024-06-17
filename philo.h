@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:04:15 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 13:37:28 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 16:24:50 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct s_init {
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	simulation_lock;
+	pthread_mutex_t	if_meals_eaten;
 }	t_init;
 
 typedef struct s_philo {
