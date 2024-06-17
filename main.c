@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/13 16:48:26 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 12:42:38 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,33 +27,36 @@ void	print_status(t_init *init, t_philo *philo, int id, const char *status)
 	pthread_mutex_unlock(&init->print_lock);
 }
 
-int	is_dead(int i, t_init init, t_philo *philo)
+int	is_dead(t_init *init, t_philo *philo)
 {
 	int j;
+	int	i;
 
 	j = 0;
-	while (i < init.nb_philo)
+	i = 0;
+	while (i < init->nb_philo)
 	{
-		pthread_mutex_lock(&init.simulation_lock);
-		if (current_timestamp() - philo[i].last_meal_time > init.time_to_die)
+		pthread_mutex_lock(&init->simulation_lock);
+		if (current_timestamp() - philo[i].last_meal_time > init->time_to_die)
 		{
-			print_status(&init, philo, philo[i].id, "died");
-			init.stop = 1;
+			print_status(init, philo, philo[i].id, "died");
+			init->stop = 1;
 		}
-		pthread_mutex_unlock(&init.simulation_lock);
-		if (init.stop == 1)
+		pthread_mutex_unlock(&init->simulation_lock);
+		if (init->stop == 1)
 		{
-			while (j < init.nb_philo)
+			while (j < init->nb_philo)
 			{
 				pthread_detach(philo[j].thread);
 				j++;
 			}
 			free(philo);
-			free(init.forks);
-			pthread_mutex_destroy(&init.print_lock);
-			pthread_mutex_destroy(&init.simulation_lock);
+			free(init->forks);
+			pthread_mutex_destroy(&init->print_lock);
+			pthread_mutex_destroy(&init->simulation_lock);
 			return (-1);
 		}
+		i++;
 	}
 	return (0);
 }
@@ -62,22 +65,18 @@ int	main(int argc, char **argv)
 {
 	t_init	init;
 	t_philo	*philo = NULL;
-	int		i;
 
-	i = 0;
 	if (argc > 6 || argc < 5)
 	{
 		write(2, "Usage : ./philosophers number_of_philosophers time_to_die time_to_eat time_to_sleep number_of_times_each_philosopher_must_eat", 126);
 		return (0);
 	}
 	init_struct(&init, argv, argc);
-	init_philo_struct(&philo, init);
+	init_philo_struct(&philo, &init);
 	while (1)
 	{
-		i = 0;
-		if (is_dead(i, init, philo) == -1)
+		if (is_dead(&init, philo) == -1)
 			return (0);
-		i++;
 		usleep(1000);
 	}
 	return (0);

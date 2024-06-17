@@ -6,16 +6,11 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/13 16:58:58 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 13:23:06 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	philo_thinking(t_init *init, t_philo *philo)
-{
-	print_status(init, philo, philo->id, "is thinking");
-}
 
 void	philo_takefork(t_init *init, t_philo *philo)
 {
@@ -24,17 +19,15 @@ void	philo_takefork(t_init *init, t_philo *philo)
 		pthread_mutex_lock(philo->left_fork);
 		philo->l_fork = true;
 		print_status(init, philo, philo->id, "has taken a fork");
-
 		pthread_mutex_lock(philo->right_fork);
 		philo->r_fork = true;
 		print_status(init, philo, philo->id, "has taken a fork");
-	} 
+	}
 	else 
 	{
 		pthread_mutex_lock(philo->right_fork);
 		philo->r_fork = true;
 		print_status(init, philo, philo->id, "has taken a fork");
-
 		pthread_mutex_lock(philo->left_fork);
 		philo->l_fork = true;
 		print_status(init, philo, philo->id, "has taken a fork");
@@ -70,6 +63,7 @@ void	philo_sleeps(t_init *init, t_philo *philo)
 {
 	print_status(init, philo, philo->id, "is sleeping");
 	usleep(init->time_to_sleep * 1000);
+	print_status(init, philo, philo->id, "is thinking");
 }
 
 void	*philosophers_routine(void *arg)
@@ -77,14 +71,12 @@ void	*philosophers_routine(void *arg)
 	t_philo *philo;
 	t_init	*init;
 
-	if (arg == NULL)
-		printf("here");
 	philo = (t_philo *)arg;
 	init = philo->init;
-	while (!init->stop)
+	while (init->start_simu != true)
+		usleep(10);
+	while (1)
 	{
-		philo_takefork(init, philo);
-		philo_eating(init, philo);
 		pthread_mutex_lock(&init->simulation_lock);
 		if (init->stop)
 		{
@@ -93,9 +85,12 @@ void	*philosophers_routine(void *arg)
 			break;
 		}
 		pthread_mutex_unlock(&init->simulation_lock);
+		philo_takefork(init, philo);
+		philo_eating(init, philo);
+		pthread_mutex_lock(&init->simulation_lock);
+		pthread_mutex_unlock(&init->simulation_lock);
 		philo_setdown_forks(philo);
 		philo_sleeps(init, philo);
-		philo_thinking(init, philo);
 	}
 	return (NULL);
 }

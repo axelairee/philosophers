@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:04:15 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/13 16:59:01 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 13:02:45 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_init {
 	int				time_to_sleep;
 	int				nb_philo_must_eat;
 	int				stop;
+	bool			start_simu;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	simulation_lock;
@@ -48,7 +49,7 @@ typedef struct s_philo {
 
 void	*philosophers_routine(void *arg);
 int		init_struct(t_init *init, char **argv, int argc);
-void	init_philo_struct(t_philo **philo, t_init init);
+void	init_philo_struct(t_philo **philo, t_init *init);
 void	print_status(t_init *init, t_philo *philo, int id, const char *status);
 long	current_timestamp();
 

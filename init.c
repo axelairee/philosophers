@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/13 16:47:58 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/17 13:03:22 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	init_struct(t_init *init, char **argv, int argc)
 	init->time_to_sleep = atoi(argv[4]);
 	if (argc == 6)
 		init->nb_philo_must_eat = atoi(argv[5]);
+	init->stop = 0;
+	init->start_simu = false;
 	pthread_mutex_init(&init->print_lock, NULL);
 	pthread_mutex_init(&init->simulation_lock, NULL);
 	while (i < init->nb_philo)
@@ -36,25 +38,26 @@ int	init_struct(t_init *init, char **argv, int argc)
 	return (0);
 }
 
-void	init_philo_struct(t_philo **philo, t_init init)
+void	init_philo_struct(t_philo **philo, t_init *init)
 {
 	int	i;
 
 	i = 0;
-	*philo = malloc(init.nb_philo * sizeof(t_philo));
-	while (i < init.nb_philo)
+	*philo = malloc(init->nb_philo * sizeof(t_philo));
+	while (i < init->nb_philo)
 	{
 		(*philo)[i].id = i + 1;
-		(*philo)[i].left_fork = &init.forks[i];
-		(*philo)[i].right_fork = &init.forks[(i + 1) % init.nb_philo];
+		(*philo)[i].left_fork = &init->forks[i];
+		(*philo)[i].right_fork = &init->forks[(i + 1) % init->nb_philo];
 		(*philo)[i].last_meal_time = current_timestamp();
 		(*philo)[i].meals_eaten = 0;
-		(*philo)[i].init = &init;
+		(*philo)[i].init = init;
 		(*philo)[i].start_time = current_timestamp();
 		(*philo)[i].l_fork = false;
 		(*philo)[i].r_fork = false;
-		pthread_create(&(*philo)[i].thread, NULL, philosophers_routine, &philo[i]);
+		pthread_create(&(*philo)[i].thread, NULL, philosophers_routine, &(*philo)[i]);
 		i++;
 	}
-	
+	init->start_simu = true;
 }
+
