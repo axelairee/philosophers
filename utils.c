@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 13:23:34 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 13:36:54 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/19 17:17:54 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,20 @@ int	ft_atoi(const char *nptr)
 		nptr++;
 	}
 	return ((int)(nb * sign));
+}
+
+void    ft_usleep(int time)
+{
+    long    start_time;
+    long    time_to_wait;
+
+    start_time = current_timestamp();
+    while ((current_timestamp() - start_time) < time)
+    {
+        time_to_wait = ((time - (current_timestamp() - start_time)) * 1000) / 2;
+        if (time_to_wait > 1500)
+            usleep(1500);
+        else
+            usleep(time_to_wait);
+    }
 }

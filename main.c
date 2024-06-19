@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/17 16:41:21 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/19 17:18:10 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 long	current_timestamp()
 {
 	struct	timeval tv;
+	
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
@@ -26,7 +27,7 @@ void	print_status(t_init *init, t_philo *philo, int id, const char *status)
 	if (!init->stop)
 		printf("%ld %d %s\n",current_timestamp() - philo->start_time, id, status);
 	pthread_mutex_unlock(&init->print_lock);
-	pthread_mutex_lock(&init->simulation_lock);
+	pthread_mutex_unlock(&init->simulation_lock);
 }
 
 int	is_dead(t_init *init, t_philo *philo)
@@ -38,13 +39,13 @@ int	is_dead(t_init *init, t_philo *philo)
 	i = 0;
 	while (i < init->nb_philo)
 	{
-		// pthread_mutex_lock(&init->simulation_lock);
+		pthread_mutex_lock(&init->meals_time);
 		if (current_timestamp() - philo[i].last_meal_time > init->time_to_die)
 		{
 			print_status(init, philo, philo[i].id, "died");
 			init->stop = 1;
 		}
-		// pthread_mutex_unlock(&init->simulation_lock);
+		pthread_mutex_unlock(&init->meals_time);
 		if (init->stop == 1)
 		{
 			while (j < init->nb_philo)
@@ -81,7 +82,10 @@ int	main(int argc, char **argv)
 		{
 			pthread_mutex_lock(&init.if_meals_eaten);
 			if (philo->meals_eaten == init.nb_philo_must_eat)
+			{
+				pthread_mutex_unlock(&init.if_meals_eaten);
 				return(0);
+			}
 			pthread_mutex_unlock(&init.if_meals_eaten);
 		}
 		if (is_dead(&init, philo) == -1)
