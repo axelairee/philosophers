@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/24 14:30:10 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/24 16:23:27 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ int	init_struct(t_init *init, char **argv, int argc)
 	pthread_mutex_init(&init->meals_eaten, NULL);
 	pthread_mutex_init(&init->meals_time, NULL);
 	pthread_mutex_init(&init->start_mutex, NULL);
+	pthread_mutex_init(&init->s_simu, NULL);
+	pthread_mutex_init(&init->s_fork, NULL);
 	while (i < init->nb_philo)
 	{
 		pthread_mutex_init(&init->forks[i], NULL);
@@ -70,9 +72,9 @@ void	init_philo_struct(t_philo **philo, t_init *init)
 		(*philo)[i].start_time = first_time;
 		i++;
 	}
-	pthread_mutex_lock(&init->start_mutex);
+	pthread_mutex_lock(&init->s_simu);
 	init->start_simu = true;
-	pthread_mutex_unlock(&init->start_mutex);
+	pthread_mutex_unlock(&init->s_simu);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:04:15 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/24 14:12:49 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/24 16:23:45 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ typedef struct s_init {
 	pthread_mutex_t	if_meals_eaten;
 	pthread_mutex_t	meals_time;
 	pthread_mutex_t	meals_eaten;
+	pthread_mutex_t	s_simu;
+	pthread_mutex_t	s_fork;
 }	t_init;
 
 typedef struct s_philo {
