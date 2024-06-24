@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 13:23:34 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/19 17:17:54 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/20 14:17:24 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ void    ft_usleep(int time)
     while ((current_timestamp() - start_time) < time)
     {
         time_to_wait = ((time - (current_timestamp() - start_time)) * 1000) / 2;
-        if (time_to_wait > 1500)
-            usleep(1500);
+        if (time_to_wait > 50)
+            usleep(50);
         else
             usleep(time_to_wait);
     }

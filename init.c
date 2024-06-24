@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/19 17:18:23 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/24 14:30:10 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ int	init_struct(t_init *init, char **argv, int argc)
 void	init_philo_struct(t_philo **philo, t_init *init)
 {
 	int	i;
+	long first_time;
 
 	i = 0;
-	pthread_mutex_lock(&init->start_mutex);
 	*philo = malloc(init->nb_philo * sizeof(t_philo));
 	while (i < init->nb_philo)
 	{
@@ -55,16 +55,24 @@ void	init_philo_struct(t_philo **philo, t_init *init)
 		(*philo)[i].left_fork = &init->forks[i];
 		if (init->nb_philo > 1)
 			(*philo)[i].right_fork = &init->forks[(i + 1) % init->nb_philo];
-		(*philo)[i].last_meal_time = current_timestamp();
 		(*philo)[i].meals_eaten = 0;
 		(*philo)[i].init = init;
-		(*philo)[i].start_time = current_timestamp();
 		(*philo)[i].l_fork = false;
-		(*philo)[i].r_fork = (*philo)[(i + 1) % init->nb_philo].l_fork;
+		(*philo)[i].r_fork = &(*philo)[(i + init->nb_philo - 1) % init->nb_philo].l_fork;
 		pthread_create(&(*philo)[i].thread, NULL, philosophers_routine, &(*philo)[i]);
 		i++;
 	}
+	i = 0;
+	first_time = current_timestamp();
+	while (i < init->nb_philo)
+	{
+		(*philo)[i].last_meal_time = first_time;
+		(*philo)[i].start_time = first_time;
+		i++;
+	}
+	pthread_mutex_lock(&init->start_mutex);
 	init->start_simu = true;
 	pthread_mutex_unlock(&init->start_mutex);
 }
+
 

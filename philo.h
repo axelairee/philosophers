@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:04:15 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/19 17:18:16 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/24 14:12:49 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct s_philo {
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	bool			l_fork;
-	bool			r_fork;
+	bool			*r_fork;
 	long			start_time;
 	long			last_meal_time;
 	int				meals_eaten;

@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/19 17:18:10 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/20 13:06:33 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	is_dead(t_init *init, t_philo *philo)
 			}
 			free(philo);
 			free(init->forks);
+			pthread_mutex_unlock(&init->simulation_lock);
 			pthread_mutex_destroy(&init->print_lock);
 			pthread_mutex_destroy(&init->simulation_lock);
 			return (-1);
