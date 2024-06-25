@@ -6,63 +6,35 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/24 16:23:15 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/25 18:07:29 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	philo_first(t_init *init, t_philo *philo)
-{
-	pthread_mutex_lock(philo->right_fork);
-	if (!*philo->r_fork)
-	{
-		*philo->r_fork = true;
-		print_status(init, philo, philo->id, "has taken a fork");
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_lock(philo->left_fork);
-		if (!philo->l_fork)
-		{
-			philo->l_fork = true;
-			print_status(init, philo, philo->id, "has taken a fork");
-			pthread_mutex_unlock(philo->left_fork);
-			return (1);
-		}
-		else
-		{
-			pthread_mutex_unlock(philo->left_fork);
-			pthread_mutex_lock(philo->right_fork);
-			*philo->r_fork = false;
-			pthread_mutex_unlock(philo->right_fork);
-		}
-	}
-	else
-		pthread_mutex_unlock(philo->right_fork);
-	return (0);
-}
-
-int	philo_second(t_init *init, t_philo *philo)
+int	check_fork(t_init *init, t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_fork);
 	if (!philo->l_fork)
 	{
 		philo->l_fork = true;
-		print_status(init, philo, philo->id, "has taken a fork");
 		pthread_mutex_unlock(philo->left_fork);
-		pthread_mutex_lock(philo->right_fork);
-		if (!*philo->r_fork)
+		print_status(init, philo, philo->id, "has taken a fork");
+		if (init->nb_philo == 1)
+			return (0);
+		while (1)
 		{
-			*philo->r_fork = true;
-			print_status(init, philo, philo->id, "has taken a fork");
-			pthread_mutex_unlock(philo->right_fork);
-			return (1);
-		}
-		else
-		{
-			pthread_mutex_unlock(philo->right_fork);
-			pthread_mutex_lock(philo->left_fork);
-			philo->l_fork = false;
-			pthread_mutex_unlock(philo->left_fork);
+			pthread_mutex_lock(philo->right_fork);
+			if (!*philo->r_fork)
+			{
+				*philo->r_fork = true;
+				pthread_mutex_unlock(philo->right_fork);
+				print_status(init, philo, philo->id, "has taken a fork");
+				return (1);
+			}
+			else 
+				pthread_mutex_unlock(philo->right_fork);
+			usleep(50);
 		}
 	}
 	else
@@ -74,36 +46,28 @@ void	philo_takefork(t_init *init, t_philo *philo)
 {
 	while (1)
 	{
-		if (philo->id % 2 == 0)
-		{
-			if (philo_first(init, philo) == 1)
-				break;
-		}
-		else
-		{
-			if (philo_second(init, philo) == 1)
-				break;
-		}
+		if (check_fork(init, philo) == 1)
+			break;
 		usleep(50);
 	}
 }
 
 void	philo_eating(t_init *init, t_philo *philo)
 {
+	print_status(init, philo, philo->id, "is eating");
 	pthread_mutex_lock(&init->meals_time);
 	philo->last_meal_time = current_timestamp();
 	pthread_mutex_unlock(&init->meals_time);
-	print_status(init, philo, philo->id, "is eating");
-	ft_usleep(init->time_to_eat);
+	ft_usleep(init->time_to_eat, init);
 	pthread_mutex_lock(philo->left_fork);
 	philo->l_fork = false;
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_lock(philo->right_fork);
 	*philo->r_fork = false;
 	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_lock(&init->meals_eaten);
+	pthread_mutex_lock(&philo->meals_mutex);
 	philo->meals_eaten++;
-	pthread_mutex_unlock(&init->meals_eaten);
+	pthread_mutex_unlock(&philo->meals_mutex);
 }
 
 void	philo_sleeps(t_init *init, t_philo *philo)
@@ -114,9 +78,9 @@ void	philo_sleeps(t_init *init, t_philo *philo)
 	if (time_to_think < 0)
 		time_to_think = 0;
 	print_status(init, philo, philo->id, "is sleeping");
-	ft_usleep(init->time_to_sleep);
+	ft_usleep(init->time_to_sleep, init);
 	print_status(init, philo, philo->id, "is thinking");
-	ft_usleep(time_to_think);
+	ft_usleep(time_to_think, init);
 }
 
 void	*philosophers_routine(void *arg)
@@ -138,9 +102,11 @@ void	*philosophers_routine(void *arg)
 		usleep(10);
 	}
 	if (philo->id % 2 == 0)
-		ft_usleep(init->time_to_eat / 2);
+		ft_usleep(init->time_to_eat / 2, init);
 	while (1)
 	{
+		if (if_stop(init))
+			break;
 		philo_takefork(init, philo);
 		philo_eating(init, philo);
 		philo_sleeps(init, philo);

@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/20 13:06:33 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/25 18:02:42 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,20 +42,23 @@ int	is_dead(t_init *init, t_philo *philo)
 		pthread_mutex_lock(&init->meals_time);
 		if (current_timestamp() - philo[i].last_meal_time > init->time_to_die)
 		{
+			pthread_mutex_unlock(&init->meals_time);
 			print_status(init, philo, philo[i].id, "died");
+			pthread_mutex_lock(&init->simulation_lock);
 			init->stop = 1;
 		}
-		pthread_mutex_unlock(&init->meals_time);
+		else
+			pthread_mutex_unlock(&init->meals_time);
 		if (init->stop == 1)
 		{
+			pthread_mutex_unlock(&init->simulation_lock);
 			while (j < init->nb_philo)
 			{
-				pthread_detach(philo[j].thread);
+				pthread_join(philo[j].thread, NULL);
 				j++;
 			}
 			free(philo);
 			free(init->forks);
-			pthread_mutex_unlock(&init->simulation_lock);
 			pthread_mutex_destroy(&init->print_lock);
 			pthread_mutex_destroy(&init->simulation_lock);
 			return (-1);
@@ -65,29 +68,53 @@ int	is_dead(t_init *init, t_philo *philo)
 	return (0);
 }
 
+int	check_philo_eat(t_init *init, t_philo *philo)
+{
+	int all_philos_ate_enough;
+	int	i;
+
+	i = 0;
+	all_philos_ate_enough = 1;
+	while (i < init->nb_philo)
+	{
+		pthread_mutex_lock(&philo[i].meals_mutex);
+		if (philo[i].meals_eaten < init->nb_philo_must_eat)
+		{
+			all_philos_ate_enough = 0;
+			pthread_mutex_unlock(&philo[i].meals_mutex);
+			break;
+		}
+		else
+			pthread_mutex_unlock(&philo[i].meals_mutex);
+		i++;
+	}
+	if (all_philos_ate_enough)
+		return (1);
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_init	init;
 	t_philo	*philo = NULL;
+	int i;
 
+	i = 0;
 	if (argc > 6 || argc < 5)
 	{
 		write(2, "Usage : ./philosophers number_of_philosophers time_to_die time_to_eat time_to_sleep number_of_times_each_philosopher_must_eat", 126);
 		return (0);
 	}
-	init_struct(&init, argv, argc);
-	init_philo_struct(&philo, &init);
+	if (init_struct(&init, argv, argc) == -1)
+		return (-1);
+	if (init_philo_struct(&philo, &init) == -1)
+		return (-1);
 	while (1)
 	{
 		if (argc == 6)
 		{
-			pthread_mutex_lock(&init.if_meals_eaten);
-			if (philo->meals_eaten == init.nb_philo_must_eat)
-			{
-				pthread_mutex_unlock(&init.if_meals_eaten);
-				return(0);
-			}
-			pthread_mutex_unlock(&init.if_meals_eaten);
+			if (check_philo_eat(&init, philo) == 1)
+				return (0);
 		}
 		if (is_dead(&init, philo) == -1)
 			return (0);
