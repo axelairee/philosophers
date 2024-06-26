@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 13:23:34 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 16:46:28 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 17:39:36 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,11 @@ void	ft_usleep(int time, t_init *init)
 
 void	print_status(t_init *init, t_philo *philo, int id, const char *status)
 {
-	pthread_mutex_lock(&init->simulation_lock);
 	pthread_mutex_lock(&init->print_lock);
+	pthread_mutex_lock(&init->simulation_lock);
 	if (init->stop != 1)
 		printf("%ld %d %s\n", current_timestamp() - \
 		philo->start_time, id, status);
-	pthread_mutex_unlock(&init->print_lock);
 	pthread_mutex_unlock(&init->simulation_lock);
+	pthread_mutex_unlock(&init->print_lock);
 }

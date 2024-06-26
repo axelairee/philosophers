@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 16:48:38 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 17:32:45 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,14 @@ void	*philosophers_routine(void *arg)
 		if (if_stop(init))
 			break ;
 		philo_takefork(init, philo);
-		if (init->nb_philo == 1)
+		if (init->nb_philo == 1 || if_stop(init))
 			break ;
 		philo_eating(init, philo);
+		if (if_stop(init))
+			break ;
 		philo_sleeps(init, philo);
+		if (if_stop(init))
+			break ;
 	}
 	return (NULL);
 }

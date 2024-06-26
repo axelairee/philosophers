@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:29:49 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 16:43:23 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 17:46:59 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ int	check_fork(t_init *init, t_philo *philo)
 		print_status(init, philo, philo->id, "has taken a fork");
 		while (1)
 		{
+			if (if_stop(init))
+				break ;
 			pthread_mutex_lock(philo->right_fork);
 			if (!*philo->r_fork)
 			{
@@ -32,7 +34,7 @@ int	check_fork(t_init *init, t_philo *philo)
 			}
 			else
 				pthread_mutex_unlock(philo->right_fork);
-			usleep(50);
+			ft_usleep(1, init);
 		}
 	}
 	else
@@ -44,6 +46,8 @@ void	philo_takefork(t_init *init, t_philo *philo)
 {
 	while (1)
 	{
+		if (if_stop(init))
+				break ;
 		if (init->nb_philo == 1)
 		{
 			print_status(init, philo, philo->id, "has taken a fork");
@@ -51,6 +55,6 @@ void	philo_takefork(t_init *init, t_philo *philo)
 		}
 		if (check_fork(init, philo) == 1)
 			break ;
-		usleep(50);
+		ft_usleep(1, init);
 	}
 }
