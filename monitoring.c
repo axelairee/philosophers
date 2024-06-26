@@ -6,11 +6,31 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:31:57 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 16:47:30 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 16:59:37 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	free_all(t_init *init, t_philo *philo)
+{
+	int	j;
+
+	j = 0;
+
+	pthread_mutex_lock(&init->simulation_lock);
+	init->stop = 1;
+	pthread_mutex_unlock(&init->simulation_lock);
+	while (j < init->nb_philo)
+	{
+		pthread_join(philo[j].thread, NULL);
+		j++;
+	}
+	free(philo);
+	free(init->forks);
+	pthread_mutex_destroy(&init->print_lock);
+	pthread_mutex_destroy(&init->simulation_lock);
+}
 
 void	if_dead(t_init *init, t_philo *philo, int i)
 {
@@ -74,6 +94,10 @@ int	check_philo_eat(t_init *init, t_philo *philo)
 		i++;
 	}
 	if (all_philos_ate_enough)
+	{
+		
+		free_all(init, philo);
 		return (1);
+	}
 	return (0);
 }
