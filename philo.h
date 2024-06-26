@@ -6,23 +6,24 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:04:15 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/25 18:02:56 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 16:49:57 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
-#define PHILO_H
+# define PHILO_H
 
-#include <pthread.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <limits.h>
+# include <pthread.h>
+# include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <sys/time.h>
+# include <unistd.h>
+# include <limits.h>
 
-typedef struct s_init {
+typedef struct s_init
+{
 	int				nb_philo;
 	int				time_to_die;
 	int				time_to_eat;
@@ -40,12 +41,13 @@ typedef struct s_init {
 	pthread_mutex_t	s_fork;
 }	t_init;
 
-typedef struct s_philo {
+typedef struct s_philo
+{
 	int				id;
 	pthread_t		thread;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	pthread_mutex_t meals_mutex;
+	pthread_mutex_t	meals_mutex;
 	bool			l_fork;
 	bool			*r_fork;
 	long			start_time;
@@ -58,9 +60,15 @@ void	*philosophers_routine(void *arg);
 int		init_struct(t_init *init, char **argv, int argc);
 int		init_philo_struct(t_philo **philo, t_init *init);
 void	print_status(t_init *init, t_philo *philo, int id, const char *status);
-long	current_timestamp();
+long	current_timestamp(void);
 int		ft_atoi(const char *nptr);
 void	ft_usleep(int time, t_init *init);
 int		if_stop(t_init *init);
+int		check_fork(t_init *init, t_philo *philo);
+void	philo_takefork(t_init *init, t_philo *philo);
+void	if_dead(t_init *init, t_philo *philo, int i);
+int		is_dead(t_init *init, t_philo *philo);
+int		check_philo_eat(t_init *init, t_philo *philo);
+int		if_error(int argc);
 
 #endif

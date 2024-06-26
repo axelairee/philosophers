@@ -6,11 +6,19 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 13:23:34 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/25 17:47:53 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 16:46:28 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+long	current_timestamp(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
 
 int	ft_atoi(const char *nptr)
 {
@@ -62,11 +70,22 @@ void	ft_usleep(int time, t_init *init)
 	while ((current_timestamp() - start_time) < time)
 	{
 		if (if_stop(init))
-			break;
+			break ;
 		time_to_wait = ((time - (current_timestamp() - start_time)) * 1000) / 2;
 		if (time_to_wait > 50)
 			usleep(50);
 		else
 			usleep(time_to_wait);
 	}
+}
+
+void	print_status(t_init *init, t_philo *philo, int id, const char *status)
+{
+	pthread_mutex_lock(&init->simulation_lock);
+	pthread_mutex_lock(&init->print_lock);
+	if (init->stop != 1)
+		printf("%ld %d %s\n", current_timestamp() - \
+		philo->start_time, id, status);
+	pthread_mutex_unlock(&init->print_lock);
+	pthread_mutex_unlock(&init->simulation_lock);
 }

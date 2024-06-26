@@ -6,7 +6,7 @@
 #    By: abolea <abolea@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/12 14:27:40 by abolea            #+#    #+#              #
-#    Updated: 2024/06/18 13:13:26 by abolea           ###   ########.fr        #
+#    Updated: 2024/06/26 16:41:03 by abolea           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,10 @@ NAME = philo
 SRCS =  main.c \
 		init.c \
 		routine.c \
-		utils.c
+		utils.c \
+		check_fork.c \
+		monitoring.c \
+		check_error.c
 
 OBJ = $(patsubst %.c, .obj/%.o, $(SRCS))
 

@@ -6,17 +6,14 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/25 17:58:59 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/26 16:44:34 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	init_struct(t_init *init, char **argv, int argc)
+int	init_args(t_init *init, char **argv, int argc)
 {
-	int	i;
-
-	i = 0;
 	init->nb_philo = ft_atoi(argv[1]);
 	if (init->nb_philo <= 0 || init->nb_philo > 200)
 		return (write(2, "Bad Arguments\n", 15), -1);
@@ -40,33 +37,55 @@ int	init_struct(t_init *init, char **argv, int argc)
 	}
 	init->stop = 0;
 	init->start_simu = false;
-	pthread_mutex_init(&init->print_lock, NULL);
-	pthread_mutex_init(&init->simulation_lock, NULL);
-	pthread_mutex_init(&init->if_meals_eaten, NULL);
-	pthread_mutex_init(&init->meals_time, NULL);
-	pthread_mutex_init(&init->start_mutex, NULL);
-	pthread_mutex_init(&init->s_simu, NULL);
-	pthread_mutex_init(&init->s_fork, NULL);
+	return (0);
+}
+
+int	init_mutex(t_init *init)
+{
+	int	i;
+
+	i = 0;
+	if (pthread_mutex_init(&init->print_lock, NULL) != 0)
+		return (-1);
+	if (pthread_mutex_init(&init->simulation_lock, NULL) != 0)
+		return (-1);
+	if (pthread_mutex_init(&init->if_meals_eaten, NULL) != 0)
+		return (-1);
+	if (pthread_mutex_init(&init->meals_time, NULL) != 0)
+		return (-1);
+	if (pthread_mutex_init(&init->start_mutex, NULL) != 0)
+		return (-1);
+	if (pthread_mutex_init(&init->s_simu, NULL) != 0)
+		return (-1);
+	if (pthread_mutex_init(&init->s_fork, NULL) != 0)
+		return (-1);
 	while (i < init->nb_philo)
 	{
-		pthread_mutex_init(&init->forks[i], NULL);
+		if (pthread_mutex_init(&init->forks[i], NULL) != 0)
+			return (-1);
 		i++;
 	}
 	return (0);
 }
 
-int	init_philo_struct(t_philo **philo, t_init *init)
+int	init_struct(t_init *init, char **argv, int argc)
+{
+	if (init_args(init, argv, argc) == -1)
+		return (-1);
+	if (init_mutex(init) == -1)
+		return (-1);
+	return (0);
+}
+
+int	init_for_philo(t_philo **philo, t_init *init)
 {
 	int	i;
-	long first_time;
 
-	i = 0;
-	*philo = malloc(init->nb_philo * sizeof(t_philo));
-	if (!philo)
-		return (-1);
-	while (i < init->nb_philo)
+	i = -1;
+	while (++i < init->nb_philo)
 	{
-		pthread_mutex_init(&(*philo)[i].meals_mutex, NULL);
+		if (pthread_mutex_init(&(*philo)[i].meals_mutex, NULL) != 0)
+			return (-1);
 		(*philo)[i].id = i + 1;
 		(*philo)[i].left_fork = &init->forks[i];
 		if (init->nb_philo > 1)
@@ -75,10 +94,28 @@ int	init_philo_struct(t_philo **philo, t_init *init)
 		(*philo)[i].init = init;
 		(*philo)[i].l_fork = false;
 		(*philo)[i].r_fork = &(*philo)[(i + 1) % init->nb_philo].l_fork;
-		pthread_create(&(*philo)[i].thread, NULL, philosophers_routine, &(*philo)[i]);
-		i++;
+		if (pthread_create(&(*philo)[i].thread, NULL, \
+		philosophers_routine, &(*philo)[i]) != 0)
+		{
+			while (--i > 0)
+				pthread_join((*philo)[i].thread, NULL);
+			return (-1);
+		}
 	}
+	return (0);
+}
+
+int	init_philo_struct(t_philo **philo, t_init *init)
+{
+	int		i;
+	long	first_time;
+
 	i = 0;
+	*philo = malloc(init->nb_philo * sizeof(t_philo));
+	if (!philo)
+		return (-1);
+	if (init_for_philo(philo, init) == -1)
+		return (-1);
 	first_time = current_timestamp();
 	while (i < init->nb_philo)
 	{
@@ -91,5 +128,3 @@ int	init_philo_struct(t_philo **philo, t_init *init)
 	pthread_mutex_unlock(&init->s_simu);
 	return (0);
 }
-
-

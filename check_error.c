@@ -1,39 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   check_error.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 16:50:15 by abolea           ###   ########.fr       */
+/*   Created: 2024/06/26 16:35:32 by abolea            #+#    #+#             */
+/*   Updated: 2024/06/26 16:43:01 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+int	if_error(int argc)
 {
-	t_init	init;
-	t_philo	*philo;
-
-	philo = NULL;
-	if (if_error(argc) == -1)
-		return (-1);
-	if (init_struct(&init, argv, argc) == -1)
-		return (-1);
-	if (init_philo_struct(&philo, &init) == -1)
-		return (-1);
-	while (1)
+	if (argc > 6 || argc < 5)
 	{
-		if (argc == 6)
-		{
-			if (check_philo_eat(&init, philo) == 1)
-				break ;
-		}
-		if (is_dead(&init, philo) == -1)
-			break ;
-		usleep(1000);
+		write(2, "Usage : ./philo nb_of_philo time_to_die\
+time_to_eat time_to_sleep nb_of_times_each_philo_must_eat", 99);
+		return (-1);
 	}
 	return (0);
 }
