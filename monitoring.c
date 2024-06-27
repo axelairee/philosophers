@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:31:57 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 17:50:13 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/27 12:37:18 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void	if_dead(t_init *init, t_philo *philo, int i)
 	int	j;
 
 	j = 0;
-	pthread_mutex_unlock(&init->meals_time);
 	print_status(init, philo, philo[i].id, "died");
 	pthread_mutex_lock(&init->simulation_lock);
 	init->stop = 1;
@@ -62,6 +61,7 @@ int	is_dead(t_init *init, t_philo *philo)
 		pthread_mutex_lock(&init->meals_time);
 		if (current_timestamp() - philo[i].last_meal_time >= init->time_to_die)
 		{
+			pthread_mutex_unlock(&init->meals_time);
 			if_dead(init, philo, i);
 			return (-1);
 		}

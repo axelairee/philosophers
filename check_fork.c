@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:29:49 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 17:46:59 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/27 11:36:46 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int	check_fork(t_init *init, t_philo *philo)
 {
+	if (if_stop(init))
+		return (0);
 	pthread_mutex_lock(philo->left_fork);
 	if (!philo->l_fork)
 	{

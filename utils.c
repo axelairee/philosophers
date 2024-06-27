@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/17 13:23:34 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 17:39:36 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/27 11:38:05 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,15 @@ int	ft_atoi(const char *nptr)
 	return ((int)(nb * sign));
 }
 
-int	if_stop(t_init *init)
+int if_stop(t_init *init)
 {
-	pthread_mutex_lock(&init->simulation_lock);
-	if (init->stop)
-	{
-		pthread_mutex_unlock(&init->simulation_lock);
-		return (1);
-	}
-	else
-		pthread_mutex_unlock(&init->simulation_lock);
-	return (0);
+    int stopped;
+	
+	stopped = 0;
+    pthread_mutex_lock(&init->simulation_lock);
+    stopped = init->stop;
+    pthread_mutex_unlock(&init->simulation_lock);
+	return (stopped);
 }
 
 void	ft_usleep(int time, t_init *init)

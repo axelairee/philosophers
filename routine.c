@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/26 17:32:45 by abolea           ###   ########.fr       */
+/*   Updated: 2024/06/27 12:49:36 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,13 @@ void	philo_sleeps(t_init *init, t_philo *philo)
 
 int	start_simu(t_init *init)
 {
+	int	start;
+
+	start = 0;
 	pthread_mutex_lock(&init->s_simu);
-	if (init->start_simu)
-	{
-		pthread_mutex_unlock(&init->s_simu);
-		return (1);
-	}
+	start = init->start_simu;
 	pthread_mutex_unlock(&init->s_simu);
-	return (0);
+	return (start);
 }
 
 void	*philosophers_routine(void *arg)

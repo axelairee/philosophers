@@ -6,13 +6,13 @@
 #    By: abolea <abolea@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/12 14:27:40 by abolea            #+#    #+#              #
-#    Updated: 2024/06/26 16:41:03 by abolea           ###   ########.fr        #
+#    Updated: 2024/06/27 12:48:00 by abolea           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
 
-FLAGS = -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra 
 
 NAME = philo
 
