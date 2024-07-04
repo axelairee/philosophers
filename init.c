@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
+/*   By: famillebolea <famillebolea@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/27 11:37:03 by abolea           ###   ########.fr       */
+/*   Updated: 2024/07/04 13:15:36 by famillebole      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,18 @@ int	init_args(t_init *init, char **argv, int argc)
 		return (-1);
 	init->time_to_die = ft_atoi(argv[2]);
 	if (init->time_to_die <= 0)
-		return (write(2, "Bad Arguments\n", 15), -1);
+		return (free(init->forks), write(2, "Bad Arguments\n", 15), -1);
 	init->time_to_eat = ft_atoi(argv[3]);
 	if (init->time_to_eat <= 0)
-		return (write(2, "Bad Arguments\n", 15), -1);
+		return (free(init->forks), write(2, "Bad Arguments\n", 15), -1);
 	init->time_to_sleep = ft_atoi(argv[4]);
 	if (init->time_to_sleep <= 0)
-		return (write(2, "Bad Arguments\n", 15), -1);
+		return (free(init->forks), write(2, "Bad Arguments\n", 15), -1);
 	if (argc == 6)
 	{
 		init->nb_philo_must_eat = ft_atoi(argv[5]);
 		if (init->nb_philo_must_eat <= 0)
-			return (write(2, "Bad Arguments\n", 15), -1);
+			return (free(init->forks), write(2, "Bad Arguments\n", 15), -1);
 	}
 	init->stop = 0;
 	init->start_simu = false;
@@ -43,29 +43,37 @@ int	init_args(t_init *init, char **argv, int argc)
 int	init_mutex(t_init *init)
 {
 	int	i;
+	int	j;
 
-	i = 0;
+	i = -1;
+	j = 0;
 	if (pthread_mutex_init(&init->print_lock, NULL) != 0)
-		return (-1);
+		j = -1;
 	if (pthread_mutex_init(&init->simulation_lock, NULL) != 0)
-		return (-1);
+		j = -1;
 	if (pthread_mutex_init(&init->if_meals_eaten, NULL) != 0)
-		return (-1);
+		j = -1;
 	if (pthread_mutex_init(&init->meals_time, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&init->start_mutex, NULL) != 0)
-		return (-1);
+		j = -1;
 	if (pthread_mutex_init(&init->s_simu, NULL) != 0)
-		return (-1);
-	if (pthread_mutex_init(&init->s_fork, NULL) != 0)
-		return (-1);
-	while (i < init->nb_philo)
+		j = -1;
+	while (++i < init->nb_philo)
 	{
 		if (pthread_mutex_init(&init->forks[i], NULL) != 0)
-			return (-1);
-		i++;
+			j = -1;
 	}
-	return (0);
+	return (j);
+}
+
+void free_error_mutex(t_init *init)
+{
+	free(init->forks);
+	pthread_mutex_destroy(&init->print_lock);
+	pthread_mutex_destroy(&init->simulation_lock);
+	pthread_mutex_destroy(&init->if_meals_eaten);
+	pthread_mutex_destroy(&init->meals_time);
+	pthread_mutex_destroy(&init->s_simu);
+	pthread_mutex_destroy(&init->forks);
 }
 
 int	init_struct(t_init *init, char **argv, int argc)
@@ -73,7 +81,10 @@ int	init_struct(t_init *init, char **argv, int argc)
 	if (init_args(init, argv, argc) == -1)
 		return (-1);
 	if (init_mutex(init) == -1)
+	{
+		free_error_mutex(init);
 		return (-1);
+	}
 	return (0);
 }
 
@@ -99,7 +110,7 @@ int	init_for_philo(t_philo **philo, t_init *init)
 		{
 			while (--i > 0)
 				pthread_join((*philo)[i].thread, NULL);
-			return (-1);
+			return (-2);
 		}
 	}
 	return (0);
@@ -113,9 +124,12 @@ int	init_philo_struct(t_philo **philo, t_init *init)
 	i = 0;
 	*philo = malloc(init->nb_philo * sizeof(t_philo));
 	if (!philo)
-		return (-1);
+		return (free_error_mutex(init), -1);
 	if (init_for_philo(philo, init) == -1)
-		return (-1);
+	{
+		free_error_mutex(init);
+		return (free(philo), -1);
+	}
 	first_time = current_timestamp();
 	while (i < init->nb_philo)
 	{
