@@ -6,7 +6,7 @@
 #    By: abolea <abolea@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/12 14:27:40 by abolea            #+#    #+#              #
-#    Updated: 2024/06/27 12:48:00 by abolea           ###   ########.fr        #
+#    Updated: 2024/07/15 10:53:05 by abolea           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,8 @@ SRCS =  main.c \
 		utils.c \
 		check_fork.c \
 		monitoring.c \
-		check_error.c
+		check_error.c \
+		use_free.c
 
 OBJ = $(patsubst %.c, .obj/%.o, $(SRCS))
 

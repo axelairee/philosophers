@@ -6,22 +6,25 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 16:29:49 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/27 11:36:46 by abolea           ###   ########.fr       */
+/*   Updated: 2024/07/15 15:07:40 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+void	left_fork(t_init *init, t_philo *philo)
+{
+	philo->l_fork = true;
+	pthread_mutex_unlock(philo->left_fork);
+	print_status(init, philo, philo->id, "has taken a fork");
+}
+
 int	check_fork(t_init *init, t_philo *philo)
 {
-	if (if_stop(init))
-		return (0);
 	pthread_mutex_lock(philo->left_fork);
 	if (!philo->l_fork)
 	{
-		philo->l_fork = true;
-		pthread_mutex_unlock(philo->left_fork);
-		print_status(init, philo, philo->id, "has taken a fork");
+		left_fork(init, philo);
 		while (1)
 		{
 			if (if_stop(init))
@@ -36,7 +39,7 @@ int	check_fork(t_init *init, t_philo *philo)
 			}
 			else
 				pthread_mutex_unlock(philo->right_fork);
-			ft_usleep(1, init);
+			usleep(100);
 		}
 	}
 	else
@@ -49,14 +52,9 @@ void	philo_takefork(t_init *init, t_philo *philo)
 	while (1)
 	{
 		if (if_stop(init))
-				break ;
-		if (init->nb_philo == 1)
-		{
-			print_status(init, philo, philo->id, "has taken a fork");
 			break ;
-		}
 		if (check_fork(init, philo) == 1)
 			break ;
-		ft_usleep(1, init);
+		usleep(100);
 	}
 }

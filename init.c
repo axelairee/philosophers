@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: famillebolea <famillebolea@student.42.f    +#+  +:+       +#+        */
+/*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:26:32 by abolea            #+#    #+#             */
-/*   Updated: 2024/07/04 13:15:36 by famillebole      ###   ########.fr       */
+/*   Updated: 2024/07/15 11:36:10 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,29 +65,6 @@ int	init_mutex(t_init *init)
 	return (j);
 }
 
-void free_error_mutex(t_init *init)
-{
-	free(init->forks);
-	pthread_mutex_destroy(&init->print_lock);
-	pthread_mutex_destroy(&init->simulation_lock);
-	pthread_mutex_destroy(&init->if_meals_eaten);
-	pthread_mutex_destroy(&init->meals_time);
-	pthread_mutex_destroy(&init->s_simu);
-	pthread_mutex_destroy(&init->forks);
-}
-
-int	init_struct(t_init *init, char **argv, int argc)
-{
-	if (init_args(init, argv, argc) == -1)
-		return (-1);
-	if (init_mutex(init) == -1)
-	{
-		free_error_mutex(init);
-		return (-1);
-	}
-	return (0);
-}
-
 int	init_for_philo(t_philo **philo, t_init *init)
 {
 	int	i;
@@ -140,5 +117,17 @@ int	init_philo_struct(t_philo **philo, t_init *init)
 	pthread_mutex_lock(&init->s_simu);
 	init->start_simu = true;
 	pthread_mutex_unlock(&init->s_simu);
+	return (0);
+}
+
+int	init_struct(t_init *init, char **argv, int argc)
+{
+	if (init_args(init, argv, argc) == -1)
+		return (-1);
+	if (init_mutex(init) == -1)
+	{
+		free_error_mutex(init);
+		return (-1);
+	}
 	return (0);
 }

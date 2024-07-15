@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/27 12:49:36 by abolea           ###   ########.fr       */
+/*   Updated: 2024/07/15 15:13:33 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,19 @@
 void	philo_eating(t_init *init, t_philo *philo)
 {
 	print_status(init, philo, philo->id, "is eating");
+	ft_usleep(init->time_to_eat, init);
 	pthread_mutex_lock(&init->meals_time);
 	philo->last_meal_time = current_timestamp();
 	pthread_mutex_unlock(&init->meals_time);
-	ft_usleep(init->time_to_eat, init);
+	pthread_mutex_lock(&philo->meals_mutex);
+	philo->meals_eaten++;
+	pthread_mutex_unlock(&philo->meals_mutex);
 	pthread_mutex_lock(philo->left_fork);
 	philo->l_fork = false;
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_lock(philo->right_fork);
 	*philo->r_fork = false;
 	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_lock(&philo->meals_mutex);
-	philo->meals_eaten++;
-	pthread_mutex_unlock(&philo->meals_mutex);
 }
 
 void	philo_sleeps(t_init *init, t_philo *philo)
@@ -41,7 +41,7 @@ void	philo_sleeps(t_init *init, t_philo *philo)
 	(current_timestamp() - philo->last_meal_time) - \
 	philo->init->time_to_eat) / 2;
 	if (time_to_think < 0)
-		time_to_think = 0;
+		time_to_think = 1;
 	ft_usleep(time_to_think, init);
 }
 
@@ -56,6 +56,17 @@ int	start_simu(t_init *init)
 	return (start);
 }
 
+int	one_philo(t_init *init, t_philo *philo)
+{
+	if (init->nb_philo == 1)
+	{
+		print_status(init, philo, philo->id, "has taken a fork");
+		ft_usleep(init->time_to_die, init);
+		return (1);
+	}
+	return (0);
+}
+
 void	*philosophers_routine(void *arg)
 {
 	t_philo	*philo;
@@ -67,23 +78,21 @@ void	*philosophers_routine(void *arg)
 	{
 		if (start_simu(init))
 			break ;
-		usleep(10);
+		ft_usleep(1, init);
 	}
 	if (philo->id % 2 == 0)
 		ft_usleep(init->time_to_eat / 2, init);
+	// if (one_philo(init, philo) == 1)
+	// 	return (NULL);
 	while (1)
 	{
 		if (if_stop(init))
 			break ;
 		philo_takefork(init, philo);
-		if (init->nb_philo == 1 || if_stop(init))
-			break ;
 		philo_eating(init, philo);
-		if (if_stop(init))
-			break ;
+		// if (if_stop(init))
+		// 	break ;
 		philo_sleeps(init, philo);
-		if (if_stop(init))
-			break ;
 	}
 	return (NULL);
 }

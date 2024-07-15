@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 13:50:14 by abolea            #+#    #+#             */
-/*   Updated: 2024/06/27 11:36:24 by abolea           ###   ########.fr       */
+/*   Updated: 2024/07/15 14:56:54 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ int	main(int argc, char **argv)
 		}
 		if (is_dead(&init, philo) == -1)
 			break ;
-		usleep(1000);
+		ft_usleep(2, &init);
 	}
+	cleanup(&init, philo);
 	return (0);
 }
