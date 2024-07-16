@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/07/15 15:19:27 by abolea           ###   ########.fr       */
+/*   Updated: 2024/07/16 11:43:30 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 void	philo_eating(t_init *init, t_philo *philo)
 {
 	print_status(init, philo, philo->id, "is eating");
-	ft_usleep(init->time_to_eat, init);
 	pthread_mutex_lock(&init->meals_time);
 	philo->last_meal_time = current_timestamp();
 	pthread_mutex_unlock(&init->meals_time);
+	ft_usleep(init->time_to_eat, init);
 	pthread_mutex_lock(&philo->meals_mutex);
 	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->meals_mutex);
@@ -80,10 +80,10 @@ void	*philosophers_routine(void *arg)
 			break ;
 		ft_usleep(1, init);
 	}
-	if (philo->id % 2 == 0)
-		ft_usleep(init->time_to_eat / 2, init);
 	if (one_philo(init, philo) == 1)
 		return (NULL);
+	if (philo->id % 2 == 0)
+		ft_usleep(init->time_to_eat / 2, init);
 	while (1)
 	{
 		if (if_stop(init))
