@@ -6,7 +6,7 @@
 /*   By: abolea <abolea@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:24:56 by abolea            #+#    #+#             */
-/*   Updated: 2024/07/16 11:43:30 by abolea           ###   ########.fr       */
+/*   Updated: 2024/07/16 14:38:01 by abolea           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	philo_eating(t_init *init, t_philo *philo)
 {
-	print_status(init, philo, philo->id, "is eating");
 	pthread_mutex_lock(&init->meals_time);
 	philo->last_meal_time = current_timestamp();
 	pthread_mutex_unlock(&init->meals_time);
+	print_status(init, philo, philo->id, "is eating");
 	ft_usleep(init->time_to_eat, init);
 	pthread_mutex_lock(&philo->meals_mutex);
 	philo->meals_eaten++;
