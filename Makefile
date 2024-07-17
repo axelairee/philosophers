@@ -47,4 +47,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean cleanf re re .obj
+.PHONY: all clean fclean re .obj
